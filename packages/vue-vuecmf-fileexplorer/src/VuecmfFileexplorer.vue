@@ -1,0 +1,393 @@
+<template>
+  <div ref="vuecmf_fileexplorer_ref" class="vuecmf-fileexplorer">
+    <el-container>
+      <el-header>
+        <template v-for="item,key in tool">
+          <el-button @click="item.event" :key="key" v-if="item.visible"><i :class="item.icon"></i>{{ item.label }}</el-button>
+        </template>
+        <el-button @click="service.changeListShow('card')"><i class="bi bi-card-image"></i> 缩略图</el-button>
+        <el-button @click="service.changeListShow('list')"><i class="bi bi-card-checklist"></i> 列表</el-button>
+      </el-header>
+      <el-container>
+        <el-aside :width="folder_list_width">
+          <el-card class="box-card">
+            <template #header>
+              <div class="card-header">
+                <el-input :style="folder_display" v-model="filterFolderKeyWord" @input="service.searchFolder" placeholder="请输入关键词" clearable />
+                <div class="collapse-folder" :style="collapsePadding" @click.prevent="service.collapse" >
+                  <i class="bi bi-arrow-bar-right" title="展开" v-show="is_collapse"></i>
+                  <i class="bi bi-arrow-bar-left" title="折叠" v-show="!is_collapse"></i>
+                </div>
+              </div>
+            </template>
+
+            <el-scrollbar :height="scrollbar_height">
+              <el-tree
+                  ref="folder_tree_ref"
+                  node-key="id"
+                  :style="folder_display"
+                  :data="folder.data"
+                  :props="folder.defaultProps"
+                  :current-node-key="folder.current_select_key"
+                  :default-expand-all="true"
+                  :highlight-current="true"
+                  @current-change="service.changeFolder"
+              />
+            </el-scrollbar>
+
+          </el-card>
+
+        </el-aside>
+        <el-main>
+          <div class="main-top">
+            <el-input :model-value="'位置：' + file.path" :readonly="true" >
+              <template #append>
+                <el-button @click="service.searchFile"><i class="bi bi-arrow-repeat"></i></el-button>
+              </template>
+            </el-input>
+            <el-input
+                class="file-search"
+                v-model="file.keywords"
+                placeholder="请输入文件名关键词"
+                clearable
+            >
+              <template #append>
+                <el-button @click="service.searchFile"><i class="bi bi-search"></i></el-button>
+              </template>
+            </el-input>
+          </div>
+
+          <template v-if="file.list_show === 'card'">
+            <el-row :gutter="10">
+              <template :key="'card_' + index" v-for="(item,index) in file.data">
+                <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="3" style="padding: 5px">
+                  <el-card  :class="service.checkFileSelect(item)" shadow="hover" @click="service.clickCard(item)">
+                    <img :src="item.url" class="card-img-top" :alt="item.file_name">
+                    <div class="card-body">
+                      <div class="card-title">{{ item.file_name }}</div>
+                      <div class="card-text">
+                        {{ item.update_time }}<br>
+                        {{ item.size }}
+                      </div>
+                    </div>
+                  </el-card>
+                </el-col>
+              </template>
+            </el-row>
+          </template>
+          <template v-else>
+            <el-table
+                ref="tableRef"
+                :data="file.data"
+                :default-sort="{ prop: 'date', order: 'descending' }"
+                style="width: 100%"
+                :height="file.table_height"
+                size="small"
+                @selection-change="service.tableSelectionChange"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column prop="file_name" label="文件名" sortable min-width="180" />
+              <el-table-column prop="update_time" label="修改时间" sortable min-width="150" />
+              <el-table-column prop="ext" label="扩展名" sortable min-width="100" />
+              <el-table-column prop="size" label="大小" sortable min-width="100" />
+              <el-table-column prop="remark" label="备注" min-width="100" />
+              <el-table-column label="操作"  min-width="60">
+                <template #default="scope">
+                  <el-link :href="scope.row.url" type="primary"  target="_blank">查看</el-link>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+
+          <div class="pagination">
+            <el-pagination
+                @size-change="service.handleSizeChange"
+                @current-change="service.handleCurrentChange"
+                :current-page="file.current_page"
+                :page-sizes="[5,10,20,30,40,50,100,200,300,500]"
+                :page-size="file.page_size"
+                :layout="file.page_layout"
+                :pager-count="5"
+                :total="file.total">
+            </el-pagination>
+          </div>
+
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+
+  <!-- 创建/修改文件夹 -->
+  <el-dialog
+      v-model="folder.folder_dlg"
+      :title="folder.folder_dlg_title"
+      width="40%"
+  >
+    <el-form>
+      <el-form-item label="父级：" v-if="folder.is_new">
+        <el-tree-select
+            v-model="folder.current_pid"
+            :props="folder.defaultProps"
+            :default-expand-all="true"
+            :data="folder.data"
+            @current-change="service.changeFolderParent"
+            node-key="id"
+            clearable
+            check-strictly />
+      </el-form-item>
+      <el-form-item label="名称：">
+        <el-input v-model="folder.folder_name" placeholder="请输入文件夹名称" clearable />
+      </el-form-item>
+
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="folder.folder_dlg = false">取消</el-button>
+        <el-button type="primary" @click="service.saveFolder">保存</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <!-- 移动文件夹-->
+  <el-dialog
+      v-model="folder.move_folder_dlg"
+      title="移动文件夹"
+      width="40%"
+  >
+    <el-form>
+      <el-form-item label="移动到：" >
+        <el-tree-select
+            v-model="folder.move_pid"
+            :props="folder.defaultProps"
+            :default-expand-all="true"
+            :data="folder.data"
+            @current-change="service.changeMoveFolderParent"
+            node-key="id"
+            clearable
+            check-strictly />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="folder.move_folder_dlg = false">取消</el-button>
+        <el-button type="primary" @click="service.moveFolder">保存</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <!-- 移动文件-->
+  <el-dialog
+      v-model="file.move_file_dlg"
+      title="移动文件"
+      width="40%"
+  >
+    <el-form>
+      <el-form-item label="移动到：" >
+        <el-tree-select
+            v-model="file.move_pid"
+            :props="folder.defaultProps"
+            :default-expand-all="true"
+            :data="folder.data"
+            @current-change="service.changeMoveFileParent"
+            node-key="id"
+            clearable
+            check-strictly />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="file.move_file_dlg = false">取消</el-button>
+        <el-button type="primary" @click="service.moveFile">保存</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <!-- 上传文件 -->
+  <el-dialog
+      v-model="file.upload_file_dlg"
+      title="上传文件"
+      width="50%"
+      @closed="service.closeUploadDlg"
+  >
+    <el-upload
+        ref="uploadRef"
+        :action="upload_api"
+        :auto-upload="false"
+        :multiple="true"
+    >
+      <template #trigger>
+        <div class="select-upload-btn"><el-button type="primary">选择文件</el-button></div>
+      </template>
+      <el-button class="start-upload-btn" type="success" @click="service.submitUpload(uploadRef)">
+        开始上传
+      </el-button>
+      <template #tip>
+        <div class="el-upload__tip">
+          支持多个文件同时上传，点击“选择文件”后，按住Ctrl+鼠标单击或鼠标框选进行多文件选择。
+        </div>
+      </template>
+    </el-upload>
+  </el-dialog>
+
+
+</template>
+
+<script lang="ts" setup>
+import Service from './Service'
+import {defineEmits, toRefs, ref} from "vue"
+import {ElTable, UploadInstance} from "element-plus";
+const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile'])
+const props = defineProps({
+  //当前文件夹根目录
+  root_path: {
+    type: String,
+    default: 'uploads'
+  },
+  //每页显示条数
+  page_size: {
+    type: Number,
+    default: 30,
+  },
+  //文件列表展示方式
+  list_show: {
+    type: String,
+    default: 'card'
+  },
+  //上传文件后端API
+  upload_api: {
+    type: String,
+    default: ''
+  },
+  //工具条配置
+  tool_config:{
+    type: Array,
+    default: String['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']
+  }
+})
+
+const {root_path, page_size, list_show, upload_api, tool_config} = toRefs(props)
+const uploadRef = ref<UploadInstance>()
+const tableRef = ref<InstanceType<typeof ElTable>>()
+
+//实例化服务类
+const service = new Service({
+  root_path: root_path,
+  page_size: page_size,
+  list_show: list_show,
+  tableRef: tableRef,
+  tool_config: tool_config
+},emit)
+
+const {
+  vuecmf_fileexplorer_ref,
+  folder_list_width,
+  folder_display,
+  filterFolderKeyWord,
+  collapsePadding,
+  is_collapse,
+  scrollbar_height,
+  folder_tree_ref,
+  tool,
+  folder,
+  file,
+} = service.getConfig()
+
+</script>
+
+<script lang="ts" >
+import { defineComponent } from 'vue'
+import "bootstrap-icons/font/bootstrap-icons.css"
+
+export default defineComponent({
+  name: 'vuecmf-fileexplorer',
+});
+</script>
+
+<style lang="scss" >
+.start-upload-btn{  margin-left: 10px;}
+.select-upload-btn{ padding-top: 2px;}
+.vuecmf-fileexplorer{
+  /* 工具条 */
+  .el-header{
+    --el-header-height:auto !important;
+    background-color: #f7f8f9;
+    padding: 5px 0;
+    .el-button{ margin:5px 8px 5px 0; }
+    i {
+      font-size: 16px; margin-right: 4px;
+    }
+  }
+
+  /* 左边文件夹列表 */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .el-tree { width: 100%; }
+  .collapse-folder{
+    cursor: pointer;
+  }
+  .box-card{
+    .el-card__header{
+      padding: 9px;
+    }
+    .el-card__body {
+      padding: 6px 0 0 0;
+    }
+  }
+
+  /* 列表 */
+  .el-main { --el-main-padding: 0 10px 0 10px; background-color: #f7f8f9;}
+  .main-top{
+    display: flex;
+    padding-bottom: 6px;
+    .file-search{ max-width: 220px;}
+    .el-input+.el-input{ margin-left: 6px;}
+    i{ font-size: 16px;}
+  }
+
+  .card-img-top{ width: 100%; }
+  /*缩略图*/
+  .card-container,.card-container-select{
+    cursor: pointer;
+    .el-card__body {
+      padding: 8px;
+    }
+    .card-title{
+      font-size: 12px; padding: 5px 0;
+    }
+    .card-text{
+      font-size: 12px; padding-bottom: 5px;
+    }
+  }
+  /* 缩略图默认状态 */
+  .card-container{
+    .card-title{
+      color: #000000;
+    }
+    .card-text{
+      color: #7b7d83;
+    }
+  }
+  /* 缩略图选中状态 */
+  .card-container-select{
+    background-color: #409EFF;
+    .card-title{
+      color: #ffffff;
+    }
+    .card-text{
+      color: #ffffff;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 10px auto;
+  }
+
+}
+
+
+</style>
