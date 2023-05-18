@@ -15,6 +15,7 @@
       @selectFile="selectFile"
       @moveFile="moveFile"
       @delFile="delFile"
+      @saveFile="saveFile"
   >
   </vuecmf-fileexplorer>
 
@@ -126,7 +127,7 @@ export default defineComponent({
 
     //加载文件列表
     const loadFile = (folderObj: AnyObject):void => {
-      /*api.post('http://localhost:8080/web/file_explorer',{
+      api.post('http://localhost:8080/web/file_explorer',{
         wid:'c97c1b3671fef2055e175ca2154d217a',
         data:{
           keywords: folderObj.keywords,
@@ -145,9 +146,9 @@ export default defineComponent({
         }else{
           ElMessage.error(res.toString())
         }
-      })*/
+      })
       console.log(folderObj)
-      folderObj.total = 16
+      /*folderObj.total = 16
       folderObj.data = []
       for(let i = 1; i <= 16; i++) {
         folderObj.data.push({
@@ -161,7 +162,7 @@ export default defineComponent({
           "create_time": "2023-05-16 16:13:33",
           "update_time": "2023-05-18 15:17:35",
         })
-      }
+      }*/
 
     }
 
@@ -184,6 +185,11 @@ export default defineComponent({
       data.loadFile()
     }
 
+    //保存文件
+    const saveFile = (data:AnyObject):void => {
+      console.log(data)
+    }
+
     return {
       loadFolder,
       saveFolder,
@@ -193,6 +199,7 @@ export default defineComponent({
       selectFile,
       moveFile,
       delFile,
+      saveFile
     }
   }
 });

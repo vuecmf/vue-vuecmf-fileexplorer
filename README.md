@@ -46,6 +46,7 @@ createApp(App).use(VuecmfFileexplorer).mount('#app')
       @selectFile="selectFile"
       @moveFile="moveFile"
       @delFile="delFile"
+      @saveFile="saveFile"
   >
   </vuecmf-fileexplorer>
 
@@ -149,6 +150,11 @@ export default defineComponent({
       //重新加载文件列表
       data.loadFile()
     }
+    
+    //保存文件
+    const saveFile = (data:AnyObject):void => {
+      console.log(data)
+    }
 
     return {
       loadFolder,
@@ -159,6 +165,7 @@ export default defineComponent({
       selectFile,
       moveFile,
       delFile,
+      saveFile
     }
   }
 });
@@ -196,5 +203,7 @@ selectFile: 选择文件
 moveFile: 移动文件
 
 delFile: 删除文件
+
+saveFile: 保存文件名等信息
 
 

@@ -23,6 +23,7 @@ export default class Service {
         is_collapse: ref(false),  //文件夹是否已折叠
         scrollbar_height: ref('calc(80VH - 60px)'),  //文件夹滚动区域高度
         tool: ref<AnyObject>([]),  //工具条
+        is_help_dlg: false,  //是否显示帮助弹窗
 
         folder_tree_ref: ref(),
         folder: {
@@ -66,6 +67,7 @@ export default class Service {
 
             upload_file_dlg: false, //是否显示上传文件弹窗
             tableRef: ref<InstanceType<typeof ElTable>>(), //文件列表table实例
+            current_input_file: ref(), //当前修改的文件
 
         },
     })
@@ -489,6 +491,19 @@ export default class Service {
         }).catch(() => {
             console.log('delete cancel')
         })
+    }
+
+    /**
+     * 编辑文件
+     * @param fileObj
+     */
+    editFile = (fileObj:AnyObject):void => {
+        this.config.file.current_input_file = fileObj
+    }
+
+    saveFile = ():void => {
+        this.emit('saveFile',this.config.file.current_input_file)
+        this.config.file.current_input_file = null
     }
 
 }

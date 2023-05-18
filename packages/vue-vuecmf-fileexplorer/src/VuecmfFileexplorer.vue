@@ -7,6 +7,7 @@
         </template>
         <el-button @click="service.changeListShow('card')"><i class="bi bi-card-image"></i> 缩略图</el-button>
         <el-button @click="service.changeListShow('list')"><i class="bi bi-card-checklist"></i> 列表</el-button>
+        <el-button @click="is_help_dlg = true"><i class="bi bi-question-square"></i> 帮助</el-button>
       </el-header>
       <el-container>
         <el-aside :width="folder_list_width">
@@ -62,9 +63,34 @@
               <template :key="'card_' + index" v-for="(item,index) in file.data">
                 <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="3" style="padding: 5px">
                   <el-card  :class="service.checkFileSelect(item)" shadow="hover" @click="service.clickCard(item)">
-                    <img :src="item.url" class="card-img-top" :alt="item.file_name">
+                    <template v-if="['png','jpg','jpeg','gif','bmp'].indexOf(item.ext.toLowerCase()) != -1">
+                      <img :src="item.url" class="card-img-top" :alt="item.file_name">
+                    </template>
+                    <template v-else>
+                      <div class="file-icon">
+                        <i class="bi bi-file-earmark-pdf" v-if="item.ext.toLowerCase() == 'pdf'"></i>
+                        <i class="bi bi-file-earmark-text" v-else-if="item.ext.toLowerCase() == 'txt'"></i>
+                        <i class="bi bi-file-earmark-word" v-else-if="['doc','docx'].indexOf(item.ext.toLowerCase()) != -1"></i>
+                        <i class="bi bi-file-earmark-zip" v-else-if="['zip','rar'].indexOf(item.ext.toLowerCase()) != -1"></i>
+                        <i class="bi bi-file-earmark-spreadsheet" v-else-if="['xls','xlsx'].indexOf(item.ext.toLowerCase()) != -1"></i>
+                        <i class="bi bi-file-earmark" v-else></i>
+                      </div>
+                    </template>
+
                     <div class="card-body">
-                      <div class="card-title">{{ item.file_name }}</div>
+                      <div class="card-title">
+                        <div @dblclick="service.editFile(item)" v-if="file.current_input_file == null || file.current_input_file.id != item.id">{{ item.file_name }}</div>
+                        <el-input
+                            v-model="item.file_name"
+                            clearable
+                            size="small"
+                            v-if="file.current_input_file != null && file.current_input_file.id == item.id"
+                        >
+                          <template #append>
+                            <el-button @click="service.saveFile" size="small">保存</el-button>
+                          </template>
+                        </el-input>
+                      </div>
                       <div class="card-text">
                         {{ item.update_time }}<br>
                         {{ item.size }}
@@ -86,7 +112,21 @@
                 @selection-change="service.tableSelectionChange"
             >
               <el-table-column type="selection" width="55" />
-              <el-table-column prop="file_name" label="文件名" sortable min-width="180" />
+              <el-table-column prop="file_name" label="文件名" sortable min-width="200">
+                <template #default="scope">
+                  <div @dblclick="service.editFile(scope.row)" v-if="file.current_input_file == null || file.current_input_file.id != scope.row.id">{{ scope.row.file_name }}</div>
+                  <el-input
+                      v-model="scope.row.file_name"
+                      clearable
+                      size="small"
+                      v-if="file.current_input_file != null && file.current_input_file.id == scope.row.id"
+                  >
+                    <template #append>
+                      <el-button @click="service.saveFile" size="small">保存</el-button>
+                    </template>
+                  </el-input>
+                </template>
+              </el-table-column>
               <el-table-column prop="update_time" label="修改时间" sortable min-width="150" />
               <el-table-column prop="ext" label="扩展名" sortable min-width="100" />
               <el-table-column prop="size" label="大小" sortable min-width="100" />
@@ -229,6 +269,39 @@
     </el-upload>
   </el-dialog>
 
+  <!-- 帮助 -->
+  <el-dialog
+      v-model="is_help_dlg"
+      title="帮助"
+      width="50%"
+  >
+    <div class="about-title">
+      <h3>VueCMF File Explorer</h3>
+      <div>
+        VueCMF文件管理器<br>
+        当前版本：v1.1.0<br>
+        <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
+      </div>
+    </div>
+
+    <div class="help-doc"><strong>使用说明：</strong></div>
+    <ul>
+      <li>文件夹相关操作
+        <p>在工具条中点击对应文件夹操作按钮即可，其中修改、移动及删除操作需要先在左边的文件夹列表中选择要操作的文件夹名称，再点击相应按钮。</p>
+      </li>
+      <li>文件相关操作
+        <p>在工具条中点击对应文件操作按钮即可，其中移动及删除操作需要先在文件列表中选择要操作的文件，再点击相应按钮。</p>
+        <p>文件列表在缩略图和列表展示方式下，都支持双击文件名进行文件名修改。</p>
+      </li>
+    </ul>
+    <template #footer>
+      <span class="text-center">
+        <el-button @click="is_help_dlg = false">关闭</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+
 
 </template>
 
@@ -288,6 +361,7 @@ const {
   scrollbar_height,
   folder_tree_ref,
   tool,
+  is_help_dlg,
   folder,
   file,
 } = service.getConfig()
@@ -306,13 +380,20 @@ export default defineComponent({
 <style lang="scss" >
 .start-upload-btn{  margin-left: 10px;}
 .select-upload-btn{ padding-top: 2px;}
+.text-center{ text-align: center; }
+.help-doc{ padding-top: 15px;}
+.about-title{
+  text-align: center;
+  div{ font-size: 12px;}
+}
 .vuecmf-fileexplorer{
+
   /* 工具条 */
   .el-header{
     --el-header-height:auto !important;
     background-color: #f7f8f9;
     padding: 5px 0;
-    .el-button{ margin:5px 8px 5px 0; }
+    .el-button{ margin:3px 6px 3px 0; padding: 8px 9px; }
     i {
       font-size: 16px; margin-right: 4px;
     }
@@ -338,14 +419,19 @@ export default defineComponent({
   }
 
   /* 列表 */
-  .el-main { --el-main-padding: 0 10px 0 10px; background-color: #f7f8f9;}
+  .el-main {
+    --el-main-padding: 0 10px 0 10px; background-color: #f7f8f9;
+  }
   .main-top{
     display: flex;
     padding-bottom: 6px;
     .file-search{ max-width: 220px;}
     .el-input+.el-input{ margin-left: 6px;}
     i{ font-size: 16px;}
+    .el-button{ padding: 8px; }
   }
+
+  .el-button--small{ padding: 3px;}
 
   .card-img-top{ width: 100%; }
   /*缩略图*/
@@ -373,11 +459,15 @@ export default defineComponent({
   /* 缩略图选中状态 */
   .card-container-select{
     background-color: #409EFF;
-    .card-title{
+    .card-title, .card-text, i{
       color: #ffffff;
     }
-    .card-text{
-      color: #ffffff;
+  }
+
+  .file-icon{
+    text-align: center;
+    i{
+      font-size: 4rem;
     }
   }
 
