@@ -126,32 +126,32 @@ export default defineComponent({
     }
 
     //加载文件列表
-    const loadFile = (folderObj: AnyObject):void => {
-      api.post('http://localhost:8080/web/file_explorer',{
+    const loadFile = (fileObj: AnyObject):void => {
+      /*api.post('http://localhost:8080/web/file_explorer',{
         wid:'c97c1b3671fef2055e175ca2154d217a',
         data:{
-          keywords: folderObj.keywords,
-          filter: folderObj.filter,
-          page: folderObj.current_page,
-          page_size: folderObj.page_size
+          keywords: fileObj.keywords,
+          filter: fileObj.filter,
+          page: fileObj.current_page,
+          page_size: fileObj.page_size
         }
       }).then((res:AnyObject) => {
         if(res.status == 200){
           if(res.data.code == 0){
-            folderObj.data = res.data.data.data
-            folderObj.total = res.data.data.total
+            fileObj.data = res.data.data.data
+            fileObj.total = res.data.data.total
           }else{
             ElMessage.error(res.data.msg)
           }
         }else{
           ElMessage.error(res.toString())
         }
-      })
-      console.log(folderObj)
-      /*folderObj.total = 16
-      folderObj.data = []
+      })*/
+      console.log(fileObj)
+      fileObj.total = 16
+      fileObj.data = []
       for(let i = 1; i <= 16; i++) {
-        folderObj.data.push({
+        fileObj.data.push({
           "id": i,
           "file_name": "hamburger"+i+".png",
           "ext": "png",
@@ -162,7 +162,7 @@ export default defineComponent({
           "create_time": "2023-05-16 16:13:33",
           "update_time": "2023-05-18 15:17:35",
         })
-      }*/
+      }
 
     }
 

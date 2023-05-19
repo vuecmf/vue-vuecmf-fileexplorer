@@ -19,6 +19,7 @@ npm install vue-vuecmf-fileexplorer
 import { createApp } from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
+import "bootstrap-icons/font/bootstrap-icons.css"
 
 /*导入组件*/
 import VuecmfFileexplorer from "vue-vuecmf-fileexplorer"
