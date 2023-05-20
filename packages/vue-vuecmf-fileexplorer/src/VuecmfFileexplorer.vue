@@ -371,9 +371,11 @@ const {
 <script lang="ts" >
 import { defineComponent } from 'vue'
 import "bootstrap-icons/font/bootstrap-icons.css"
+import { ElTreeSelect,ElContainer,ElHeader,ElMain,ElTree,ElCard,ElAside,ElLink } from 'element-plus'
 
 export default defineComponent({
   name: 'vuecmf-fileexplorer',
+  components: {ElTreeSelect, ElContainer,ElHeader,ElMain,ElTree,ElCard,ElAside,ElLink }
 });
 </script>
 
