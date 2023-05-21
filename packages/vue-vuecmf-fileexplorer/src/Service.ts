@@ -21,7 +21,7 @@ export default class Service {
         filterFolderKeyWord: ref(''), //筛选文件夹关键字
         collapsePadding: ref('padding-left: 10px;'), //折叠按钮边距
         is_collapse: ref(false),  //文件夹是否已折叠
-        scrollbar_height: ref('calc(80VH - 60px)'),  //文件夹滚动区域高度
+        scrollbar_height: ref('calc(80VH - 45px)'),  //文件夹滚动区域高度
         tool: ref<AnyObject>([]),  //工具条
         is_help_dlg: false,  //是否显示帮助弹窗
 

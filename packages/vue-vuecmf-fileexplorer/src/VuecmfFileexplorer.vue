@@ -61,7 +61,7 @@
           <template v-if="file.list_show === 'card'">
             <el-row :gutter="10">
               <template :key="'card_' + index" v-for="(item,index) in file.data">
-                <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="3" style="padding: 5px">
+                <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="3" class="card-warpper">
                   <el-card  :class="service.checkFileSelect(item)" shadow="hover" @click="service.clickCard(item)">
                     <template v-if="['png','jpg','jpeg','gif','bmp'].indexOf(item.ext.toLowerCase()) != -1">
                       <img :src="item.url" class="card-img-top" :alt="item.file_name">
@@ -435,8 +435,9 @@ export default defineComponent({
 
   .el-button--small{ padding: 3px;}
 
-  .card-img-top{ width: 100%; }
   /*缩略图*/
+  .card-img-top{ width: 100%; }
+  .card-warpper{ padding: 5px; min-width: 6rem;}
   .card-container,.card-container-select{
     cursor: pointer;
     .el-card__body {
