@@ -8,7 +8,15 @@
 
 import {reactive, ref, toRefs, ToRefs} from "vue";
 import {AnyObject} from "./typings/vuecmf";
-import {ElMessageBox, ElTable, UploadFile, UploadFiles, UploadInstance, UploadRawFile} from "element-plus";
+import {
+    ElMessageBox,
+    ElTable,
+    UploadFile,
+    UploadFiles,
+    UploadInstance,
+    UploadProgressEvent,
+    UploadRawFile, UploadUserFile
+} from "element-plus";
 
 export default class Service {
     emit: EmitFn<EE[]>
@@ -68,7 +76,7 @@ export default class Service {
             upload_file_dlg: false, //是否显示上传文件弹窗
             tableRef: ref<InstanceType<typeof ElTable>>(), //文件列表table实例
             current_input_file: ref(), //当前修改的文件
-
+            uploadInstance: ref<UploadInstance>(), //上传组件实例
         },
     })
 
@@ -415,6 +423,7 @@ export default class Service {
      * 执行上传操作
      */
     submitUpload = (uploadInstance:UploadInstance):void => {
+        this.config.file.uploadInstance = uploadInstance
         uploadInstance.submit()
     }
 
@@ -517,7 +526,7 @@ export default class Service {
      * @param uploadFiles
      */
     onUploadSuccess = (response: AnyObject, uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
-        this.emit('onUploadSuccess',{response:response, uploadFile: uploadFile, uploadFiles: uploadFiles})
+        this.emit('onUploadSuccess',{response:response, uploadFile: uploadFile, uploadFiles: uploadFiles, uploadInstance: this.config.file.uploadInstance})
     }
 
     /**
@@ -527,7 +536,7 @@ export default class Service {
      * @param uploadFiles
      */
     onUploadError = (error: Error, uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
-        this.emit('onUploadError',{error: error, uploadFile: uploadFile, uploadFiles: uploadFiles})
+        this.emit('onUploadError',{error: error, uploadFile: uploadFile, uploadFiles: uploadFiles, uploadInstance: this.config.file.uploadInstance})
     }
 
     /**
@@ -535,7 +544,52 @@ export default class Service {
      * @param rawFile
      */
     beforeUpload = (rawFile: UploadRawFile):void => {
-        this.emit('beforeUpload', rawFile)
+        this.emit('beforeUpload', {rawFile:rawFile, uploadInstance: this.config.file.uploadInstance})
+    }
+
+    /**
+     * 点击文件列表中已上传的文件时的钩子
+     * @param uploadFile
+     */
+    onPreview = (uploadFile: UploadFile):void => {
+        this.emit('onPreview', {uploadFile:uploadFile, uploadInstance: this.config.file.uploadInstance})
+    }
+
+    /**
+     * 文件列表移除文件时的钩子
+     * @param uploadFile
+     * @param uploadFiles
+     */
+    onRemove = (uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
+        this.emit('onRemove', {uploadFile:uploadFile, uploadFiles:uploadFiles, uploadInstance: this.config.file.uploadInstance})
+    }
+
+    /**
+     * 文件上传时的钩子
+     * @param evt
+     * @param uploadFile
+     * @param uploadFiles
+     */
+    onProgress = (evt: UploadProgressEvent, uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
+        this.emit('onProgress', {evt: evt, uploadFile:uploadFile, uploadFiles:uploadFiles, uploadInstance: this.config.file.uploadInstance})
+    }
+
+    /**
+     * 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
+     * @param uploadFile
+     * @param uploadFiles
+     */
+    onChange = (uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
+        this.emit('onChange', {uploadFile:uploadFile, uploadFiles:uploadFiles, uploadInstance: this.config.file.uploadInstance})
+    }
+
+    /**
+     * 当超出限制时，执行的钩子函数
+     * @param files
+     * @param uploadFiles
+     */
+    onExceed = (files: File[], uploadFiles: UploadUserFile[]):void => {
+        this.emit('onExceed',{files:files, uploadFiles: uploadFiles, uploadInstance: this.config.file.uploadInstance})
     }
 
 }

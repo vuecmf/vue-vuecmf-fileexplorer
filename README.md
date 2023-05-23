@@ -241,4 +241,14 @@ onUploadSuccess： 文件上传成功
 
 onUploadError： 文件上传失败
 
+onPreview： 点击文件列表中已上传的文件时的钩子
+
+onRemove： 文件列表移除文件时的钩子
+
+onProgress： 文件上传时的钩子
+
+onChange： 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
+
+onExceed： 当超出限制时，执行的钩子函数
+
 

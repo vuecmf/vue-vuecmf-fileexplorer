@@ -259,6 +259,11 @@
         :on-success="service.onUploadSuccess"
         :on-error="service.onUploadError"
         :before-upload="service.beforeUpload"
+        :on-preview="service.onPreview"
+        :on-remove="service.onRemove"
+        :on-progress="service.onProgress"
+        :on-change="service.onChange"
+        :on-exceed="service.onExceed"
     >
       <template #trigger>
         <div class="select-upload-btn"><el-button type="primary">选择文件</el-button></div>
@@ -284,7 +289,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.2.0<br>
+        当前版本：v1.3.0<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
@@ -312,7 +317,7 @@
 import Service from './Service'
 import {defineEmits, toRefs, ref} from "vue"
 import {ElTable, UploadInstance} from "element-plus";
-const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload'])
+const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload', 'onPreview', 'onRemove','onProgress','onChange', 'onExceed'])
 const props = defineProps({
   //当前文件夹根目录
   root_path: {

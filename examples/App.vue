@@ -21,6 +21,11 @@
       @beforeUpload="beforeUpload"
       @onUploadSuccess="onUploadSuccess"
       @onUploadError="onUploadError"
+      @onPreview="onPreview"
+      @onRemove="onRemove"
+      @onProgress="onProgress"
+      @onChange="onChange"
+      @onExceed="onExceed"
   >
   </vuecmf-fileexplorer>
 
@@ -213,6 +218,30 @@ export default defineComponent({
         console.log('error = ', data)
     }
 
+    //点击文件列表中已上传的文件时的钩子
+    const onPreview = (data:AnyObject):void => {
+      console.log('error = ', data)
+    }
+
+    //文件列表移除文件时的钩子
+    const onRemove = (data:AnyObject):void => {
+      console.log('error = ', data)
+    }
+
+    //文件上传时的钩子
+    const onProgress = (data:AnyObject):void => {
+      console.log('error = ', data)
+    }
+
+    //文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
+    const onChange = (data:AnyObject):void => {
+      console.log('error = ', data)
+    }
+
+    //当超出限制时，执行的钩子函数
+    const onExceed = (data:AnyObject):void => {
+      console.log('error = ', data)
+    }
 
     return {
       loadFolder,
@@ -227,7 +256,12 @@ export default defineComponent({
 
       beforeUpload,
       onUploadSuccess,
-      onUploadError
+      onUploadError,
+      onPreview,
+      onRemove,
+      onProgress,
+      onChange,
+      onExceed,
     }
   }
 });
