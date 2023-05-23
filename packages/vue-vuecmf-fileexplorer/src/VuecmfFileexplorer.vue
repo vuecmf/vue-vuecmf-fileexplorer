@@ -254,6 +254,11 @@
         :action="upload_api"
         :auto-upload="false"
         :multiple="true"
+        :headers="headers"
+        :data="data"
+        :on-success="service.onUploadSuccess"
+        :on-error="service.onUploadError"
+        :before-upload="service.beforeUpload"
     >
       <template #trigger>
         <div class="select-upload-btn"><el-button type="primary">选择文件</el-button></div>
@@ -279,7 +284,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.1.4<br>
+        当前版本：v1.2.0<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
@@ -307,7 +312,7 @@
 import Service from './Service'
 import {defineEmits, toRefs, ref} from "vue"
 import {ElTable, UploadInstance} from "element-plus";
-const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile'])
+const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload'])
 const props = defineProps({
   //当前文件夹根目录
   root_path: {
@@ -333,7 +338,18 @@ const props = defineProps({
   tool_config:{
     type: Array,
     default: String['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']
+  },
+  //设置上传的请求头部
+  headers: {
+    type: Object,
+    default: null
+  },
+  //上传时附带的额外参数
+  data: {
+    type: Object,
+    default: null
   }
+
 })
 
 const {root_path, page_size, list_show, upload_api, tool_config} = toRefs(props)

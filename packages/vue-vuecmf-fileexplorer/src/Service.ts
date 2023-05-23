@@ -8,7 +8,7 @@
 
 import {reactive, ref, toRefs, ToRefs} from "vue";
 import {AnyObject} from "./typings/vuecmf";
-import {ElMessageBox, ElTable, UploadInstance} from "element-plus";
+import {ElMessageBox, ElTable, UploadFile, UploadFiles, UploadInstance, UploadRawFile} from "element-plus";
 
 export default class Service {
     emit: EmitFn<EE[]>
@@ -508,6 +508,34 @@ export default class Service {
     saveFile = ():void => {
         this.emit('saveFile',this.config.file.current_input_file)
         this.config.file.current_input_file = null
+    }
+
+    /**
+     * 上传文件成功回调
+     * @param response
+     * @param uploadFile
+     * @param uploadFiles
+     */
+    onUploadSuccess = (response: AnyObject, uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
+        this.emit('onUploadSuccess',{response:response, uploadFile: uploadFile, uploadFiles: uploadFiles})
+    }
+
+    /**
+     * 上传文件失败回调
+     * @param error
+     * @param uploadFile
+     * @param uploadFiles
+     */
+    onUploadError = (error: Error, uploadFile: UploadFile, uploadFiles: UploadFiles):void => {
+        this.emit('onUploadError',{error: error, uploadFile: uploadFile, uploadFiles: uploadFiles})
+    }
+
+    /**
+     * 上传文件之前的钩子，参数为上传的文件， 若返回false或者返回 Promise 且被 reject，则停止上传。
+     * @param rawFile
+     */
+    beforeUpload = (rawFile: UploadRawFile):void => {
+        this.emit('beforeUpload', rawFile)
     }
 
 }

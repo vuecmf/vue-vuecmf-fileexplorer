@@ -7,6 +7,8 @@
       list_show="list"
       :tool_config="['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']"
       upload_api="http://localhost:8080/web/upload"
+      :headers="{token:'0b9d5a83a8c63670015d970c540eb17e'}"
+      :data="{user:'vuecmf'}"
       @loadFolder="loadFolder"
       @moveFolder="moveFolder"
       @saveFolder="saveFolder"
@@ -16,6 +18,9 @@
       @moveFile="moveFile"
       @delFile="delFile"
       @saveFile="saveFile"
+      @beforeUpload="beforeUpload"
+      @onUploadSuccess="onUploadSuccess"
+      @onUploadError="onUploadError"
   >
   </vuecmf-fileexplorer>
 
@@ -30,8 +35,8 @@ import {ElMessage} from "element-plus";
 export default defineComponent({
   name: 'App',
   setup(){
-    const token = 'fea47c5084ab8a6e2d3fa004aa19abeb'
-    const api = new Model(token)
+    //const token = '0b9d5a83a8c63670015d970c540eb17e'
+    //const api = new Model(token)
 
     //加载文件夹列表
     const loadFolder = (folderObj: AnyObject):void => {
@@ -193,6 +198,22 @@ export default defineComponent({
       console.log(data)
     }
 
+    //上传文件前
+    const beforeUpload = (data:AnyObject):void => {
+       console.log("before upload: ",data)
+    }
+
+    //上传文件成功返回数据时
+    const onUploadSuccess = (data:AnyObject):void => {
+       console.log('success = ',data)
+    }
+
+    //上传文件失败
+    const onUploadError = (data:AnyObject):void => {
+        console.log('error = ', data)
+    }
+
+
     return {
       loadFolder,
       saveFolder,
@@ -202,7 +223,11 @@ export default defineComponent({
       selectFile,
       moveFile,
       delFile,
-      saveFile
+      saveFile,
+
+      beforeUpload,
+      onUploadSuccess,
+      onUploadError
     }
   }
 });

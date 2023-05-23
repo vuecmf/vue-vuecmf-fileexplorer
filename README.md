@@ -39,6 +39,8 @@ createApp(App).use(VuecmfFileexplorer).mount('#app')
       list_show="list"
       :tool_config="['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']"
       upload_api="http://localhost:8080/web/upload"
+      :headers="{token:'0b9d5a83a8c63670015d970c540eb17e'}"
+      :data="{user:'vuecmf'}"
       @loadFolder="loadFolder"
       @moveFolder="moveFolder"
       @saveFolder="saveFolder"
@@ -48,6 +50,9 @@ createApp(App).use(VuecmfFileexplorer).mount('#app')
       @moveFile="moveFile"
       @delFile="delFile"
       @saveFile="saveFile"
+      @beforeUpload="beforeUpload"
+      @onUploadSuccess="onUploadSuccess"
+      @onUploadError="onUploadError"
   >
   </vuecmf-fileexplorer>
 
@@ -156,6 +161,21 @@ export default defineComponent({
     const saveFile = (data:AnyObject):void => {
       console.log(data)
     }
+    
+    //上传文件前
+    const beforeUpload = (data:AnyObject):void => {
+       console.log("before upload: ",data)
+    }
+
+    //上传文件成功返回数据时
+    const onUploadSuccess = (data:AnyObject):void => {
+       console.log('success = ',data)
+    }
+
+    //上传文件失败
+    const onUploadError = (data:AnyObject):void => {
+        console.log('error = ', data)
+    }
 
     return {
       loadFolder,
@@ -166,7 +186,11 @@ export default defineComponent({
       selectFile,
       moveFile,
       delFile,
-      saveFile
+      saveFile,
+      
+      beforeUpload,
+      onUploadSuccess,
+      onUploadError
     }
   }
 });
@@ -187,6 +211,10 @@ upload_api：上传文件后端API， 默认空
 
 tool_config：工具条功能配置， 默认所有功能（'new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file'）
 
+headers：设置上传的请求头部
+
+data：上传时附带的额外参数
+
 ### 事件说明
 
 loadFolder: 加载文件夹列表
@@ -206,5 +234,11 @@ moveFile: 移动文件
 delFile: 删除文件
 
 saveFile: 保存文件名等信息
+
+beforeUpload: 文件上传前
+
+onUploadSuccess： 文件上传成功
+
+onUploadError： 文件上传失败
 
 
