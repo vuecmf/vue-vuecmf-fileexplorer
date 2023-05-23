@@ -122,7 +122,10 @@ export default defineComponent({
           ElMessage.error(res.toString())
         }
       })*/
+
       console.log(folderData)
+      folderData.loadFolder()
+
     }
 
     //加载文件列表

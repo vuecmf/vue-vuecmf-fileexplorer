@@ -2,7 +2,7 @@
   <div ref="vuecmf_fileexplorer_ref" class="vuecmf-fileexplorer">
     <el-container>
       <el-header>
-        <template v-for="item,key in tool">
+        <template v-for="(item,key) in tool">
           <el-button @click="item.event" :key="key" v-if="item.visible"><i :class="item.icon"></i>{{ item.label }}</el-button>
         </template>
         <el-button @click="service.changeListShow('card')"><i class="bi bi-card-image"></i> 缩略图</el-button>
@@ -279,7 +279,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.1.0<br>
+        当前版本：v1.1.4<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
@@ -295,9 +295,7 @@
       </li>
     </ul>
     <template #footer>
-      <span class="text-center">
         <el-button @click="is_help_dlg = false">关闭</el-button>
-      </span>
     </template>
   </el-dialog>
 

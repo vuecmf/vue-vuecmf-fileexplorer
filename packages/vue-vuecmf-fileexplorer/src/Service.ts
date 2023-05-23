@@ -266,6 +266,7 @@ export default class Service {
                 id:this.config.folder.current_select.id,
                 loadFolder: () => {
                     this.emit('loadFolder', this.config.folder)
+                    this.config.file.filter = { dir_id: this.config.folder.current_select.pid }
                     this.emit('loadFile', this.config.file)
                     this.config.folder.current_select = null
                 }
@@ -501,6 +502,9 @@ export default class Service {
         this.config.file.current_input_file = fileObj
     }
 
+    /**
+     * 保存文件
+     */
     saveFile = ():void => {
         this.emit('saveFile',this.config.file.current_input_file)
         this.config.file.current_input_file = null
