@@ -77,6 +77,7 @@ export default class Service {
             tableRef: ref<InstanceType<typeof ElTable>>(), //文件列表table实例
             current_input_file: ref(), //当前修改的文件
             uploadInstance: ref<UploadInstance>(), //上传组件实例
+            current_folder_id: ref(0), //当前上传文件选择的文件夹ID
         },
     })
 
@@ -204,6 +205,15 @@ export default class Service {
             this.config.folder.move_pid = selectRow.id
         },100)
     }
+
+    /**
+     * 选择上传文件夹
+     * @param selectRow
+     */
+    changeUploadFolder = (selectRow: AnyObject):void => {
+        this.config.file.current_folder_id = selectRow.id
+    }
+
 
     /**
      * 保存文件夹

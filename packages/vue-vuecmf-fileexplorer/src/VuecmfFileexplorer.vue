@@ -249,34 +249,49 @@
       width="50%"
       @closed="service.closeUploadDlg"
   >
-    <el-upload
-        ref="uploadRef"
-        :action="upload_api"
-        :auto-upload="false"
-        :multiple="true"
-        :headers="headers"
-        :data="data"
-        :on-success="service.onUploadSuccess"
-        :on-error="service.onUploadError"
-        :before-upload="service.beforeUpload"
-        :on-preview="service.onPreview"
-        :on-remove="service.onRemove"
-        :on-progress="service.onProgress"
-        :on-change="service.onChange"
-        :on-exceed="service.onExceed"
-    >
-      <template #trigger>
-        <div class="select-upload-btn"><el-button type="primary">选择文件</el-button></div>
-      </template>
-      <el-button class="start-upload-btn" type="success" @click="service.submitUpload(uploadRef)">
-        开始上传
-      </el-button>
-      <template #tip>
-        <div class="el-upload__tip">
-          支持多个文件同时上传，点击“选择文件”后，按住Ctrl+鼠标单击或鼠标框选进行多文件选择。
-        </div>
-      </template>
-    </el-upload>
+    <el-form>
+      <el-form-item label="所在目录：" >
+        <el-tree-select
+            v-model="file.current_folder_id"
+            :props="folder.defaultProps"
+            :default-expand-all="true"
+            :data="folder.data"
+            @current-change="service.changeUploadFolder"
+            node-key="id"
+            clearable
+            check-strictly />
+      </el-form-item>
+      <el-form-item label="上传文件：" >
+        <el-upload
+            ref="uploadRef"
+            :action="upload_api"
+            :auto-upload="false"
+            :multiple="true"
+            :headers="headers"
+            :data="Object.assign(data,{folder_id: file.current_folder_id})"
+            :on-success="service.onUploadSuccess"
+            :on-error="service.onUploadError"
+            :before-upload="service.beforeUpload"
+            :on-preview="service.onPreview"
+            :on-remove="service.onRemove"
+            :on-progress="service.onProgress"
+            :on-change="service.onChange"
+            :on-exceed="service.onExceed"
+        >
+          <template #trigger>
+            <div class="select-upload-btn"><el-button type="primary">选择文件</el-button></div>
+          </template>
+          <el-button class="start-upload-btn" type="success" @click="service.submitUpload(uploadRef)">
+            开始上传
+          </el-button>
+          <template #tip>
+            <div class="el-upload__tip">
+              支持多个文件同时上传，点击“选择文件”后，按住Ctrl+鼠标单击或鼠标框选进行多文件选择。
+            </div>
+          </template>
+        </el-upload>
+      </el-form-item>
+    </el-form>
   </el-dialog>
 
   <!-- 帮助 -->
@@ -289,7 +304,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.3.0<br>
+        当前版本：v1.4.0<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
