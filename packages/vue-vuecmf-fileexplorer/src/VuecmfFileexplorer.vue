@@ -105,7 +105,7 @@
             <el-table
                 ref="tableRef"
                 :data="file.data"
-                :default-sort="{ prop: 'date', order: 'descending' }"
+                :default-sort="{ prop: file.order_field.value, order: file.order_sort.value === 'desc' ? 'descending': 'ascending' }"
                 style="width: 100%"
                 :height="file.table_height"
                 size="small"
@@ -333,7 +333,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.5.1<br>
+        当前版本：v1.6.0<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
@@ -361,7 +361,7 @@
 import Service from './Service'
 import {defineEmits, toRefs, ref} from "vue"
 import {ElTable, UploadInstance} from "element-plus";
-const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload', 'onPreview', 'onRemove','onProgress','onChange', 'onExceed','remarkFile','fileSortChange'])
+const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload', 'onPreview', 'onRemove','onProgress','onChange', 'onExceed','remarkFile'])
 const props = defineProps({
   //当前文件夹根目录
   root_path: {

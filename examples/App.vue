@@ -27,7 +27,6 @@
       @onProgress="onProgress"
       @onChange="onChange"
       @onExceed="onExceed"
-      @fileSortChange="fileSortChange"
   >
   </vuecmf-fileexplorer>
 
@@ -148,7 +147,9 @@ export default defineComponent({
           keywords: fileObj.keywords,
           filter: fileObj.filter,
           page: fileObj.current_page,
-          page_size: fileObj.page_size
+          page_size: fileObj.page_size,
+          order_field: fileObj.order_field,
+          order_sort: fileObj.order_sort
         }
       }).then((res:AnyObject) => {
         if(res.status == 200){
@@ -207,13 +208,6 @@ export default defineComponent({
 
     //备注文件
     const remarkFile = (data:AnyObject):void => {
-      console.log(data)
-      //重新加载文件列表
-      data.loadFile()
-    }
-
-    //文件列表排序事件
-    const fileSortChange = (data:AnyObject):void => {
       console.log(data)
       //重新加载文件列表
       data.loadFile()

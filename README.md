@@ -54,7 +54,6 @@ createApp(App).use(VuecmfFileexplorer).mount('#app')
       @beforeUpload="beforeUpload"
       @onUploadSuccess="onUploadSuccess"
       @onUploadError="onUploadError"
-      @fileSortChange="fileSortChange"
   >
   </vuecmf-fileexplorer>
 
@@ -170,13 +169,7 @@ export default defineComponent({
       //重新加载文件列表
       data.loadFile()
     }
-    
-    //文件列表排序事件
-    const fileSortChange = (data:AnyObject):void => {
-      console.log(data)
-      //重新加载文件列表
-      data.loadFile()
-    }
+   
     
     //上传文件前
     const beforeUpload = (data:AnyObject):void => {
@@ -204,7 +197,6 @@ export default defineComponent({
       delFile,
       saveFile,
       remarkFile,
-      fileSortChange,
       
       beforeUpload,
       onUploadSuccess,
@@ -254,8 +246,6 @@ delFile: 删除文件
 remarkFile: 备注文件
 
 saveFile: 保存文件名等信息
-
-fileSortChange: 文件列表排序回调事件
 
 beforeUpload: 文件上传前
 

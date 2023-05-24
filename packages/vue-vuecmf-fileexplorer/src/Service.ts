@@ -81,6 +81,8 @@ export default class Service {
             current_folder_id: ref(0), //当前上传文件选择的文件夹ID
             remark_file_dlg: false, //是否显示备注弹窗
             remark_content: ref(''),  //备注内容
+            order_field: ref('date'),  //文件列表排序字段
+            order_sort: ref('asc'),  //排序类型
         },
     })
 
@@ -665,14 +667,9 @@ export default class Service {
      * @param data
      */
     fileSortChange = (data:AnyObject):void => {
-        this.emit('fileSortChange', {
-            column: data.column,
-            prop: data.prop,
-            order: data.order,
-            loadFile: () => {
-                this.emit('loadFile', this.config.file)
-            }
-        })
+        this.config.file.order_field = data.prop
+        this.config.file.order_sort = data.order == 'ascending' ? 'asc' : 'desc'
+        this.searchFile()
     }
 
 
