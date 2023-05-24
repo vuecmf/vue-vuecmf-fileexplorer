@@ -9,6 +9,7 @@
 import {reactive, ref, toRefs, ToRefs} from "vue";
 import {AnyObject} from "./typings/vuecmf";
 import {
+    ElMessage,
     ElMessageBox,
     ElTable,
     UploadFile,

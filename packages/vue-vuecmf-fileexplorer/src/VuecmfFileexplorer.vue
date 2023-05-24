@@ -333,7 +333,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.5.0<br>
+        当前版本：v1.5.1<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
