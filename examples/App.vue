@@ -5,7 +5,7 @@
       root_path="uploads"
       :page_size="30"
       list_show="list"
-      :tool_config="['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']"
+      :tool_config="['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file','remark_file']"
       upload_api="http://localhost:8080/web/upload"
       :headers="{token:'0b9d5a83a8c63670015d970c540eb17e'}"
       :data="{user:'vuecmf'}"
@@ -18,6 +18,7 @@
       @moveFile="moveFile"
       @delFile="delFile"
       @saveFile="saveFile"
+      @remarkFile="remarkFile"
       @beforeUpload="beforeUpload"
       @onUploadSuccess="onUploadSuccess"
       @onUploadError="onUploadError"
@@ -26,6 +27,7 @@
       @onProgress="onProgress"
       @onChange="onChange"
       @onExceed="onExceed"
+      @fileSortChange="fileSortChange"
   >
   </vuecmf-fileexplorer>
 
@@ -168,7 +170,7 @@ export default defineComponent({
           "id": i,
           "file_name": "hamburger"+i+".png",
           "ext": "png",
-          "size": "120kb",
+          "size": 5120,
           "dir_id": 4,
           "url": "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
           "remark": "",
@@ -201,6 +203,20 @@ export default defineComponent({
     //保存文件
     const saveFile = (data:AnyObject):void => {
       console.log(data)
+    }
+
+    //备注文件
+    const remarkFile = (data:AnyObject):void => {
+      console.log(data)
+      //重新加载文件列表
+      data.loadFile()
+    }
+
+    //文件列表排序事件
+    const fileSortChange = (data:AnyObject):void => {
+      console.log(data)
+      //重新加载文件列表
+      data.loadFile()
     }
 
     //上传文件前
@@ -253,6 +269,8 @@ export default defineComponent({
       moveFile,
       delFile,
       saveFile,
+      remarkFile,
+      fileSortChange,
 
       beforeUpload,
       onUploadSuccess,

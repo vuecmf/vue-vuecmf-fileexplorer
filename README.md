@@ -37,7 +37,7 @@ createApp(App).use(VuecmfFileexplorer).mount('#app')
       root_path="uploads"
       :page_size="30"
       list_show="list"
-      :tool_config="['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']"
+      :tool_config="['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file','remark_file']"
       upload_api="http://localhost:8080/web/upload"
       :headers="{token:'0b9d5a83a8c63670015d970c540eb17e'}"
       :data="{user:'vuecmf'}"
@@ -50,9 +50,11 @@ createApp(App).use(VuecmfFileexplorer).mount('#app')
       @moveFile="moveFile"
       @delFile="delFile"
       @saveFile="saveFile"
+      @remarkFile="remarkFile"
       @beforeUpload="beforeUpload"
       @onUploadSuccess="onUploadSuccess"
       @onUploadError="onUploadError"
+      @fileSortChange="fileSortChange"
   >
   </vuecmf-fileexplorer>
 
@@ -162,6 +164,20 @@ export default defineComponent({
       console.log(data)
     }
     
+    //备注文件
+    const remarkFile = (data:AnyObject):void => {
+      console.log(data)
+      //重新加载文件列表
+      data.loadFile()
+    }
+    
+    //文件列表排序事件
+    const fileSortChange = (data:AnyObject):void => {
+      console.log(data)
+      //重新加载文件列表
+      data.loadFile()
+    }
+    
     //上传文件前
     const beforeUpload = (data:AnyObject):void => {
        console.log("before upload: ",data)
@@ -187,6 +203,8 @@ export default defineComponent({
       moveFile,
       delFile,
       saveFile,
+      remarkFile,
+      fileSortChange,
       
       beforeUpload,
       onUploadSuccess,
@@ -233,7 +251,11 @@ moveFile: 移动文件
 
 delFile: 删除文件
 
+remarkFile: 备注文件
+
 saveFile: 保存文件名等信息
+
+fileSortChange: 文件列表排序回调事件
 
 beforeUpload: 文件上传前
 

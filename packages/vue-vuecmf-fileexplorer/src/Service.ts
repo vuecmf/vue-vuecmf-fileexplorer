@@ -78,6 +78,8 @@ export default class Service {
             current_input_file: ref(), //当前修改的文件
             uploadInstance: ref<UploadInstance>(), //上传组件实例
             current_folder_id: ref(0), //当前上传文件选择的文件夹ID
+            remark_file_dlg: false, //是否显示备注弹窗
+            remark_content: ref(''),  //备注内容
         },
     })
 
@@ -103,6 +105,7 @@ export default class Service {
             { name: 'upload', label: '上传文件', icon:'bi bi-cloud-upload', event: this.openUploadDlg, visible: true },
             { name: 'move_file', label: '移动文件', icon:'bi bi-arrows-move', event: this.openMoveFile, visible: true },
             { name: 'del_file', label: '删除文件', icon:'bi bi-trash', event: this.delFile, visible: true },
+            { name: 'remark_file', label: '备注', icon:'bi bi-journal-bookmark-fill', event: this.openRemarkDlg, visible: true },
         ]
 
         this.config.tool.forEach((item:AnyObject) => {
@@ -426,6 +429,9 @@ export default class Service {
      * 打开上传文件弹窗
      */
     openUploadDlg = ():void => {
+        if(this.config.file.uploadInstance != null){
+            this.config.file.uploadInstance.clearFiles()
+        }
         this.config.file.upload_file_dlg = true
     }
 
@@ -477,6 +483,41 @@ export default class Service {
             }
         })
         this.config.file.move_file_dlg = false
+    }
+
+    /**
+     * 打开备注弹窗
+     */
+    openRemarkDlg = ():void => {
+        if(this.config.file.select_files == null || this.config.file.select_files.length == 0){
+            ElMessage.error('请先选择文件！')
+            return
+        }
+        if(this.config.folder.data == null){
+            ElMessage.error('文件夹列表为空！')
+            return
+        }
+        this.config.file.remark_file_dlg = true
+        this.config.file.remark_content = ''
+    }
+
+    /**
+     * 备注文件
+     */
+    remarkFile = ():void => {
+        const file_id:Array<number> = []
+        this.config.file.select_files.forEach((item:AnyObject)=>{
+            file_id.push(item.id)
+        })
+
+        this.emit('remarkFile', {
+            select_file_id: file_id.join(','),
+            remark_content: this.config.file.remark_content,
+            loadFile: () => {
+                this.emit('loadFile', this.config.file)
+            }
+        })
+        this.config.file.remark_file_dlg = false
     }
 
     /**
@@ -601,5 +642,37 @@ export default class Service {
     onExceed = (files: File[], uploadFiles: UploadUserFile[]):void => {
         this.emit('onExceed',{files:files, uploadFiles: uploadFiles, uploadInstance: this.config.file.uploadInstance})
     }
+
+    /**
+     * 格式化显示文件大小
+     * @param size
+     */
+    formatFileSize = (size: number): string => {
+        if(size >= 1024 * 1024 * 1024){
+            return Math.round(size / (1024 * 1024 * 1024) * 10) / 10 + "GB"
+        }else if(size >= 1024 * 1024){
+            return Math.round(size / (1024 * 1024) * 10) / 10 + "MB"
+        }else if(size >= 1024){
+            return Math.round(size / 1024  * 10) / 10 + "KB"
+        }else{
+            return size + "字节"
+        }
+    }
+
+    /**
+     * 文件列表排序回调事件
+     * @param data
+     */
+    fileSortChange = (data:AnyObject):void => {
+        this.emit('fileSortChange', {
+            column: data.column,
+            prop: data.prop,
+            order: data.order,
+            loadFile: () => {
+                this.emit('loadFile', this.config.file)
+            }
+        })
+    }
+
 
 }

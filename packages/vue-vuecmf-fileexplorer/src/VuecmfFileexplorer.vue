@@ -93,7 +93,7 @@
                       </div>
                       <div class="card-text">
                         {{ item.update_time }}<br>
-                        {{ item.size }}
+                        {{ service.formatFileSize(item.size) }}
                       </div>
                     </div>
                   </el-card>
@@ -110,6 +110,7 @@
                 :height="file.table_height"
                 size="small"
                 @selection-change="service.tableSelectionChange"
+                @sort-change="service.fileSortChange"
             >
               <el-table-column type="selection" width="55" />
               <el-table-column prop="file_name" label="文件名" sortable min-width="200">
@@ -129,7 +130,11 @@
               </el-table-column>
               <el-table-column prop="update_time" label="修改时间" sortable min-width="150" />
               <el-table-column prop="ext" label="扩展名" sortable min-width="100" />
-              <el-table-column prop="size" label="大小" sortable min-width="100" />
+              <el-table-column prop="size" label="大小" sortable min-width="100" >
+                <template #default="scope">
+                  {{ service.formatFileSize(scope.row.size) }}
+                </template>
+              </el-table-column>
               <el-table-column prop="remark" label="备注" min-width="100" />
               <el-table-column label="操作"  min-width="60">
                 <template #default="scope">
@@ -242,6 +247,30 @@
     </template>
   </el-dialog>
 
+  <!-- 备注文件-->
+  <el-dialog
+      v-model="file.remark_file_dlg"
+      title="备注文件"
+      width="40%"
+  >
+    <el-form>
+      <el-form-item label="内容：" >
+        <el-input
+            v-model="file.remark_content"
+            :rows="2"
+            type="textarea"
+            placeholder="请输入备注内容"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="file.remark_file_dlg = false">取消</el-button>
+        <el-button type="primary" @click="service.remarkFile">保存</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
   <!-- 上传文件 -->
   <el-dialog
       v-model="file.upload_file_dlg"
@@ -304,7 +333,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.4.0<br>
+        当前版本：v1.5.0<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
@@ -332,7 +361,7 @@
 import Service from './Service'
 import {defineEmits, toRefs, ref} from "vue"
 import {ElTable, UploadInstance} from "element-plus";
-const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload', 'onPreview', 'onRemove','onProgress','onChange', 'onExceed'])
+const emit = defineEmits(['loadFolder','saveFolder','moveFolder','delFolder','loadFile','uploadFile','saveFile','moveFile','delFile','selectFile', 'onUploadSuccess', 'onUploadError','beforeUpload', 'onPreview', 'onRemove','onProgress','onChange', 'onExceed','remarkFile','fileSortChange'])
 const props = defineProps({
   //当前文件夹根目录
   root_path: {
@@ -357,7 +386,7 @@ const props = defineProps({
   //工具条配置
   tool_config:{
     type: Array,
-    default: String['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file']
+    default: String['new_folder','update_folder','move_folder','del_folder','upload','move_file','del_file','remark_file']
   },
   //设置上传的请求头部
   headers: {
