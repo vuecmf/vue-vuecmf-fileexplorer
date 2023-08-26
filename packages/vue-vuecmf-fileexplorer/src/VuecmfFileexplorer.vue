@@ -63,7 +63,7 @@
               <template :key="'card_' + index" v-for="(item,index) in file.data">
                 <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="3" class="card-warpper">
                   <el-card  :class="service.checkFileSelect(item)" shadow="hover" @click="service.clickCard(item)">
-                    <template v-if="['png','jpg','jpeg','gif','bmp'].indexOf(item.ext.toLowerCase()) != -1">
+                    <template v-if="['png','jpg','jpeg','gif','bmp','ico'].indexOf(item.ext.toLowerCase()) != -1">
                       <img :src="item.url" class="card-img-top" :alt="item.file_name">
                     </template>
                     <template v-else>
@@ -333,7 +333,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.6.1<br>
+        当前版本：v1.6.2<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
