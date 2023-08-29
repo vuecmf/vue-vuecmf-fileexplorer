@@ -6,7 +6,7 @@
 // | Author: emei8 <2278667823@qq.com>
 // +----------------------------------------------------------------------
 
-import {reactive, ref, toRefs, ToRefs} from "vue";
+import {onMounted, reactive, ref, toRefs, ToRefs} from "vue";
 import {AnyObject} from "./typings/vuecmf";
 import {
     ElMessage,
@@ -18,6 +18,7 @@ import {
     UploadProgressEvent,
     UploadRawFile, UploadUserFile
 } from "element-plus";
+import ClipboardJS from "clipboard";
 
 export default class Service {
     emit: EmitFn<EE[]>
@@ -113,6 +114,32 @@ export default class Service {
 
         this.config.tool.forEach((item:AnyObject) => {
             item.visible = init_config.tool_config.value.indexOf(item.name) != -1;
+        })
+
+        //复制文件链接
+        onMounted(() => {
+            const conf = this.config
+            const clipboard = new ClipboardJS('#copy-file-link',{
+                text() {
+                    const arr:Array<string> = []
+                    if(conf.file.select_files != null){
+                        conf.file.select_files.forEach((item:AnyObject)=>{
+                            arr.push(item.url)
+                        })
+                    }
+                    return arr.join(',')
+                }
+            })
+            clipboard.on('success', () => {
+                ElMessage.success('已成功复制到剪贴版')
+            })
+            clipboard.on('error', () => {
+                if(conf.file.select_files == null){
+                    ElMessage.error('请选择要复制链接的文件')
+                }else{
+                    ElMessage.error('文件链接复制失败')
+                }
+            })
         })
 
     }
@@ -671,6 +698,5 @@ export default class Service {
         this.config.file.order_sort = data.order == 'ascending' ? 'asc' : 'desc'
         this.searchFile()
     }
-
 
 }

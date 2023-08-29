@@ -264,7 +264,6 @@ export default defineComponent({
       delFile,
       saveFile,
       remarkFile,
-      fileSortChange,
 
       beforeUpload,
       onUploadSuccess,

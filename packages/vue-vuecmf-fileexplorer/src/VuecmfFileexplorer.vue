@@ -7,6 +7,7 @@
         </template>
         <el-button @click="service.changeListShow('card')"><i class="bi bi-card-image"></i> 缩略图</el-button>
         <el-button @click="service.changeListShow('list')"><i class="bi bi-card-checklist"></i> 列表</el-button>
+        <el-button id="copy-file-link"><i class="bi bi-link-45deg"></i> 复制文件链接</el-button>
         <el-button @click="is_help_dlg = true"><i class="bi bi-question-square"></i> 帮助</el-button>
       </el-header>
       <el-container>
@@ -333,7 +334,7 @@
       <h3>VueCMF File Explorer</h3>
       <div>
         VueCMF文件管理器<br>
-        当前版本：v1.6.2<br>
+        当前版本：v1.7.0<br>
         <a href="http://www.vuecmf.com" target="_blank">http://www.vuecmf.com</a>
       </div>
     </div>
